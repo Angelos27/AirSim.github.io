@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <title>Wind Tunnel Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<button class="button" onclick="setupScene(1)">Wind Tunnel</button>
+<!--<button class="button" onclick="setupScene(3)">Hires Tunnel</button>//-->
+<!--<button class="button" onclick="setupScene(0)">Tank</button>-->
+<button class="button" onclick="setupScene(2)">Paint</button>
+
+<input type = "checkbox" id = "streamButton" onclick = "scene.showStreamlines = !scene.showStreamlines">
+<label for="streamButton">Streamlines</label>
+<input type = "checkbox" id = "streamModeButton" onclick = 
+"streamModes.numOfXSection = streamModes.numOfXSection == 5 ? f.numX-1 : 5;
+ streamModes.numSections = streamModes.numSections == 1000 ? 10 : 1000;
+ streamModes.repeats = streamModes.repeats == 3 ? 5 :3">
+<label for="streamModeButton">StreamMode</label>
+<input type = "checkbox" id = "velocityButton" onclick = "scene.showVelocities = !scene.showVelocities">
+<label for="velocityButton">Velocity</label>
+<input type = "checkbox" name = "field" id = "pressureButton" onclick = "scene.showPressure = !scene.showPressure;">
+<label for="pressureButton">Pressure</label>
+<input type = "checkbox" name = "field" id = "smokeButton" onclick = "scene.showSmoke = !scene.showSmoke;" checked>
+<label for="smokeButton">Smoke</label>
+<!--<input type = "checkbox" id = "overrelaxButton" onclick = "scene.overRelaxation = scene.overRelaxation == 1.0 ? 1.9 : 1.0" checked>
+<label for="overrelaxButton">Overrelax</label>-->
+<input type = "checkbox" id = "squareButton" onclick = "scene.square = !scene.square">
+<label for="squareButton">Square</label>
+<input type="range" min="5" max="75" value="20" class="slider" id="speedRange">
+<label for="range">Velocity of Smoke: <span id="velOutout"></span></label>
+
+<br>
+<canvas id="myCanvas" style="border:2px solid"></canvas>
+
+<script src="index.js"></script>
+
+</body>
+</html>
