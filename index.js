@@ -8,11 +8,21 @@ var simHeight = 1;
 var cScale = canvas.height / simHeight;
 var simWidth = (canvas.width / cScale);
 
+
+
+
 var U_FIELD = 0;
 var V_FIELD = 1;
 var S_FIELD = 2;
 
-var cnt = 0;
+
+
+// these are used only to call setObstacle to adjuct the angle via the slider
+
+var globalX = 0.6;
+var globalY = 0.5;
+
+//var cnt = 0;
 
 function cX(x) {
     return x * cScale;
@@ -40,7 +50,7 @@ class Fluid {
         this.m = new Float32Array(this.numCells);
         this.newM = new Float32Array(this.numCells);
         this.m.fill(1.0)
-        var num = numX * numY;
+        //var num = numX * numY;
     }
 
     integrate(dt, gravity) {
@@ -106,7 +116,7 @@ class Fluid {
         var n = this.numY;
         var h = this.h;
         var h1 = 1.0 / h;
-        var h2 = 0.5 * h;
+        var h2 = 0.5* h;
 
         x = Math.max(Math.min(x, this.numX * h), h);
         y = Math.max(Math.min(y, this.numY * h), h);
@@ -169,7 +179,7 @@ class Fluid {
         for (var i = 1; i < this.numX; i++) {
             for (var j = 1; j < this.numY; j++) {
 
-                cnt++;
+                //cnt++;
 
                 // u component
                 if (this.s[i*n + j] != 0.0 && this.s[(i-1)*n + j] != 0.0 && j < this.numY - 1) {
@@ -188,7 +198,7 @@ class Fluid {
                     var x = i*h + h2;
                     var y = j*h;
                     var u = this.avgU(i, j);
-//						var u = this.sampleField(x,y, U_FIELD);
+                //var u = this.sampleField(x,y, U_FIELD);
                     var v = this.v[i*n + j];
                     x = x - dt*u;
                     y = y - dt*v;
@@ -260,7 +270,13 @@ var scene =
     showPressure: false,
     showSmoke: true,
     fluid: null,
-    square: false
+    circle: true,
+    square: false,
+    rainDrop: false,
+    aeroFoil: false,
+    showAngleSlide: false
+
+
 };
 
 var streamModes =
@@ -274,13 +290,22 @@ var streamModes =
 function setupScene(sceneNr = 0) 
 {
     scene.sceneNr = sceneNr;
-    scene.obstacleRadius = 0.10;
+    scene.obstacleRadius = 0.20;
     scene.overRelaxation = 1.9;
 
-    scene.dt = 1.0 / 90.0;
+
+    /*var x = document.getElementById("angle");
+    if (scene.showAngleSlide) {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+    
+    }*/
+    scene.dt = 1.0 / 90;
     scene.numIters = 40;
 
-    var res = 100;
+    
+    var res = document.getElementById("resolution").value;
     
     /*if (sceneNr == 0)
         res = 50;
@@ -318,12 +343,11 @@ function setupScene(sceneNr = 0)
     }*/
 
     if (sceneNr == 1 || sceneNr == 3) { // vortex shedding
+        
 
         var slider = document.getElementById("speedRange");
-        var output = document.getElementById("velOutput");
         
-        
-        slider.oninput = function(event){
+        slider.oninput = function(){
             var output = document.getElementById("velOutout");
             output.innerHTML = slider.value;
             setupScene(1);
@@ -351,7 +375,7 @@ function setupScene(sceneNr = 0)
         for (var j = minJ; j < maxJ; j++)
             f.m[j] = 0.0;
 
-        setObstacle(0.4, 0.5, true)
+        setObstacle(0.6, 0.5, true)
 
         scene.gravity = 0.0;
         scene.showPressure = false;
@@ -378,7 +402,7 @@ function setupScene(sceneNr = 0)
     }
 
     document.getElementById("streamButton").checked = scene.showStreamlines;
-    document.getElementById("velocityButton").checked = scene.showVelocities;
+    //document.getElementById("velocityButton").checked = scene.showVelocities;
     document.getElementById("pressureButton").checked = scene.showPressure;
     document.getElementById("smokeButton").checked = scene.showSmoke;
     //document.getElementById("overrelaxButton").checked = scene.overRelaxation > 1.0;
@@ -459,7 +483,7 @@ function draw()
                 var s = f.m[i*n + j];
                 color[0] = 255*s;
                 color[1] = 255*s;
-                color[2] = 255;
+                color[2] = 255*s;
                 if (scene.sceneNr == 2)
                     color = getSciColor(s, 0.0, 1.0);
             }
@@ -493,7 +517,7 @@ function draw()
 
     c.putImageData(id, 0, 0);
 
-    if (scene.showVelocities) {
+    /*if (scene.showVelocities) {
 
         c.strokeStyle = "#000000";	
         scale = 0.02;	
@@ -525,7 +549,7 @@ function draw()
 
             }
         }
-    }
+    }*/
 
     if (scene.showStreamlines) {
 
@@ -567,7 +591,7 @@ function draw()
         if(scene.square) {
 
             c.strokeW
-                var l = cScale * scene.obstacleRadius + f.h;
+                var l = cScale * scene.obstacleRadius/2 + f.h;
 
             if (scene.showPressure) c.fillStyle = "#000000";
 
@@ -587,12 +611,11 @@ function draw()
             c.rect(cX(scene.obstacleX) - l , cY(scene.obstacleY) - l, 2 * l, 2 * l);
             c.closePath();
             c.stroke();
-            
-
-        }else{
+        }
+        if(scene.circle){
 
             c.strokeW
-            r = scene.obstacleRadius + f.h;
+            r = scene.obstacleRadius/2 + f.h;
 
             if (scene.showPressure) c.fillStyle = "#000000";
 
@@ -614,10 +637,25 @@ function draw()
             c.stroke();
               
         }
+        /*if(scene.rainDrop)
+        {
+            c.strokeW
+            r = scene.obstacleRadius/2 + f.h;
+
+            if (scene.showPressure) c.fillStyle = "#000000";
+
+            else c.fillStyle = "#FFFFFF";
+            // cX(scene.obstacleX), cY(scene.obstacleY), cScale * r, 0.0, 2.0 * Math.PI
+            c.beginPath();
+            c.arc(cX(scene.obstacleX - r/2), cY(scene.obstacleY), cScale * r, Math.PI*(7/12), Math.PI*(17/12), false);
+            c.closePath();
+            c.stroke();
+
+        }*/
     }
 
     if (scene.showPressure) {
-        var s = "pressure: " + minP.toFixed(0) + " - " + maxP.toFixed(0) + " N/m";
+        var s = "Pressure (min)/(max): " + minP.toFixed(0) + ", " + maxP.toFixed(0) + " N/m";
         c.fillStyle ="#FFFFFF";
         c.font = "16px Arial";
         c.fillText(s, 10, 35);
@@ -640,9 +678,10 @@ function setObstacle(x, y, reset) {
     var n = f.numY;
     var cd = Math.sqrt(2) * f.h;
 
+
     if(scene.square){
 
-    var squareWidth = scene.obstacleRadius * 2 ;
+    var squareWidth = scene.obstacleRadius ;
 
         for (var i = 1; i < f.numX-2; i++) {
             for (var j = 1; j < f.numY-2; j++) {
@@ -653,21 +692,23 @@ function setObstacle(x, y, reset) {
                 dy = (j + 0.5) * f.h - y;
 
                 if( dx >  -squareWidth/2 && dx < squareWidth/2 &&
-                    dy >  -squareWidth/2 && dy < squareWidth/2  ){
+                    dy >  -squareWidth/2 && dy < squareWidth/2 ){
 
                         f.s[i*n + j] = 0.0;
                 if (scene.sceneNr == 2) 
                     f.m[i*n + j] = 0.5 + 0.5 * Math.sin(0.1 * scene.frameNr)
                 else 
                     f.m[i*n + j] = 1.0;
-                f.u[i*n + j] = vx;
-                f.u[(i+1)*n + j] = vx;
-                f.v[i*n + j] = vy;
-                f.v[i*n + j+1] = vy;
+                    f.u[i*n + j] = vx;
+                    f.u[(i+1)*n + j] = vx;
+                    f.v[i*n + j] = vy;
+                    f.v[i*n + j+1] = vy;
                 }
             }
         }   
-    }else{
+    }
+    if(scene.rainDrop){
+
         var r = scene.obstacleRadius;
 
         for (var i = 1; i < f.numX-2; i++) {
@@ -678,25 +719,114 @@ function setObstacle(x, y, reset) {
                 dx = (i + 0.5) * f.h - x;
                 dy = (j + 0.5) * f.h - y;
 
-                if (dx * dx + dy * dy < r * r) {
-                    
+                // x^2 - (-2yr/(x+r))^2
+                if (dx * dx + (dy/-((dx-r)/(2*r)))*(dy/-((dx-r)/(2*r))) < r * r ){ 
                     f.s[i*n + j] = 0.0;
                 if (scene.sceneNr == 2) 
                     f.m[i*n + j] = 0.5 + 0.5 * Math.sin(0.1 * scene.frameNr)
                 else 
                     f.m[i*n + j] = 1.0;
-                f.u[i*n + j] = vx;
-                f.u[(i+1)*n + j] = vx;
-                f.v[i*n + j] = vy;
-                f.v[i*n + j+1] = vy;;
+                    f.u[i*n + j] = vx;
+                    f.u[(i+1)*n + j] = vx;
+                    f.v[i*n + j] = vy;
+                    f.v[i*n + j+1] = vy;;
                 }
             }
 
         }
 
-        scene.showObstacle = true;
     }
+    if(scene.aeroFoil){
+
+        var angle = document.getElementById("angle").value * -(Math.PI / 180);
+        var slider = document.getElementById("angle");
+        slider.oninput = function(){
+            var output = document.getElementById("sliderAngle");
+            output.innerHTML = slider.value;
+        }
+
+        var k = document.getElementById("K").value/100;
+        var sliderk = document.getElementById("K")/100;
+        sliderk.oninput = function(){
+            var output = document.getElementById("k");
+            output.innerHTML = slider.value;
+        }
+
+
+        
+        var r = scene.obstacleRadius*4;
+
+        for (var i = 1; i < f.numX-2; i++) {
+            for (var j = 1; j < f.numY-2; j++) {
+
+                 f.s[i*n + j] = 1.0;
+
+                 // linear transformation - rotation anticlockwise
+                 // the y values are multiplied by -1 because for the screen
+                 // an increase in y is going down the page
+                rotatedI = i * Math.cos(angle) + j * Math.sin(angle);
+                rotatedJ = i * Math.sin(angle) - j * Math.cos(angle);
+
+                
+                rotatedX = x * Math.cos(angle) + y * Math.sin(angle);
+                rotatedY = x * Math.sin(angle) - y * Math.cos(angle);
+
+                dx = (rotatedI + 0.5) * f.h - rotatedX;
+                dy = (rotatedJ + 0.5) * f.h - rotatedY;
+
+                /*dy < 0.5*dx((1-(1/r)*dx)*(1-(1/r)*dx)) + 0.15*Math.sqrt(r*dx)*Math.sqrt(2-(1/r)*dx)*(1-(1/r)*dx) && 
+                    dy > 0.5*dx((1-(1/r)*dx)*(1-(1/r)*dx)) - 0.15*Math.sqrt(r*dx)*Math.sqrt(2-(1/r)*dx)*(1-(1/r)*dx)*/
+                
+                if (dy < -k*dx*((1-(1/r)*dx)*(1-(1/r)*dx)) + 0.15*Math.sqrt(r*dx)*Math.sqrt(2-(1/r)*dx)*(1-(1/r)*dx) && 
+                dy > -k*dx*((1-(1/r)*dx)*(1-(1/r)*dx)) - 0.15*Math.sqrt(r*dx)*Math.sqrt(2-(1/r)*dx)*(1-(1/r)*dx)){
+        
+                    f.s[i*n + j] = 0.0;
+                if (scene.sceneNr == 2) 
+                    f.m[i*n + j] = 0.5 + 0.5 * Math.sin(0.1 * scene.frameNr)
+                else 
+                    f.m[i*n + j] = 1.0;
+                    f.u[i*n + j] = vx;
+                    f.u[(i+1)*n + j] = vx;
+                    f.v[i*n + j] = vy;
+                    f.v[i*n + j+1] = vy;;
+                }
+            }
+
+        }
+
+    }
+    if(scene.circle){
+
+            var r = scene.obstacleRadius / 2;
+
+        for (var i = 1; i < f.numX-2; i++) {
+            for (var j = 1; j < f.numY-2; j++) {
+
+                f.s[i*n + j] = 1.0;
+
+                dx = (i + 0.5) * f.h - x;
+                dy = (j + 0.5) * f.h - y;
+
+                if (dx * dx + dy * dy < r * r ){
+                    f.s[i*n + j] = 0.0;
+                if (scene.sceneNr == 2) 
+                    f.m[i*n + j] = 0.5 + 0.5 * Math.sin(0.1 * scene.frameNr)
+                else 
+                    f.m[i*n + j] = 1.0;
+                    f.u[i*n + j] = vx;
+                    f.u[(i+1)*n + j] = vx;
+                    f.v[i*n + j] = vy;
+                    f.v[i*n + j+1] = vy;;
+                }
+            }   
+
+        }
+    }
+    scene.showObstacle = true;
 }
+
+
+
 // interaction -------------------------------------------------------
 
 var mouseDown = false;
@@ -722,12 +852,29 @@ function drag(x, y) {
         x = mx / cScale;
         y = (canvas.height - my) / cScale;
         setObstacle(x,y, false);
+        globalX = x;
+        globalY = y;
     }
 }
 
 function endDrag() {
     mouseDown = false;
 }
+
+function checkRes(res){
+    if (res > 150){
+        alert("Warning!\nThe recommended resolution is less than 150.\nPress Wind Tunnel if you wish to continue.");
+    }else if (res > 0){
+        setupScene(1)
+    }else{
+       alert("Invald input. Please try again.")
+    }
+}
+
+function controlBox(){
+    alert("Controls:\nP - Pause the simulation\nM - Run one iteration\nWIND TUNNEL - If anything goes wrong\nMouse - For everything else");
+}
+
 
 canvas.addEventListener('mousedown', event => {
     startDrag(event.x, event.y);
@@ -754,7 +901,6 @@ canvas.addEventListener('touchmove', event => {
     event.stopImmediatePropagation();
     drag(event.touches[0].clientX, event.touches[0].clientY)
 }, { passive: false});
-
 
 document.addEventListener('keydown', event => {
     switch(event.key) {

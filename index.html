@@ -1,43 +1,97 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE circleButton>
+<circleButton>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <head>
-    <title>Wind Tunnel Simulator</title>
+    <title>AirSim</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
 <button class="button" onclick="setupScene(1)">Wind Tunnel</button>
-<!--<button class="button" onclick="setupScene(3)">Hires Tunnel</button>//-->
+<button class="button" onclick="setupScene(3)">Hires Tunnel</button>
 <!--<button class="button" onclick="setupScene(0)">Tank</button>-->
 <button class="button" onclick="setupScene(2)">Paint</button>
 
+<label class="checkbox-container">
 <input type = "checkbox" id = "streamButton" onclick = "scene.showStreamlines = !scene.showStreamlines">
 <label for="streamButton">Streamlines</label>
+</label>
+
+<label class="checkbox-container">
 <input type = "checkbox" id = "streamModeButton" onclick = 
 "streamModes.numOfXSection = streamModes.numOfXSection == 5 ? f.numX-1 : 5;
- streamModes.numSections = streamModes.numSections == 1000 ? 10 : 1000;
+ streamModes.numSections = streamModes.numSections == 1000 ? 10 : 1000; 
  streamModes.repeats = streamModes.repeats == 3 ? 5 :3">
 <label for="streamModeButton">StreamMode</label>
-<input type = "checkbox" id = "velocityButton" onclick = "scene.showVelocities = !scene.showVelocities">
-<label for="velocityButton">Velocity</label>
-<input type = "checkbox" name = "field" id = "pressureButton" onclick = "scene.showPressure = !scene.showPressure;">
+</label>
+
+<!--<input type = "checkbox" id = "velocityButton" onclick = "scene.showVelocities = !scene.showVelocities">
+<label for="velocityButton">Velocity</label> -->
+
+<label class="checkbox-container">
+<input type = "checkbox" name = "field" id = "pressureButton" onclick = "scene.showPressure = !scene.showPressure;"> 
 <label for="pressureButton">Pressure</label>
+</label>
+
+<label class="checkbox-container">
 <input type = "checkbox" name = "field" id = "smokeButton" onclick = "scene.showSmoke = !scene.showSmoke;" checked>
 <label for="smokeButton">Smoke</label>
+</label>
+
 <!--<input type = "checkbox" id = "overrelaxButton" onclick = "scene.overRelaxation = scene.overRelaxation == 1.0 ? 1.9 : 1.0" checked>
 <label for="overrelaxButton">Overrelax</label>-->
-<input type = "checkbox" id = "squareButton" onclick = "scene.square = !scene.square">
-<label for="squareButton">Square</label>
-<input type="range" min="5" max="75" value="20" class="slider" id="speedRange">
-<label for="range">Velocity of Smoke: <span id="velOutout"></span></label>
 
-<br>
+<label class="checkbox-container">
+<input type = "radio" onchange="setObstacle(globalX, globalY, false)" id = "circleButton" name="shape" onclick = "scene.circle = true, scene.square = false, scene.rainDrop = false, scene.aeroFoil = false" checked>
+<label for="circleButton">Circle</label>
+</label>
+
+<label class="checkbox-container">
+<input type = "radio" onchange="setObstacle(globalX, globalY, false)" id = "squareButton" name="shape" onclick = "scene.square = true, scene.rainDrop = false, scene.aeroFoil = false, scene.circle = false">
+<label for="squareButton">Square</label>
+</label>
+
+<label class="checkbox-container">
+<input type = "radio" onchange="setObstacle(globalX, globalY, false)" id = "rainDropButton" name="shape" onclick = "scene.rainDrop = true, scene.square = false, scene.aeroFoil = false, scene.circle = false">
+<label for="rainDropButton">Rain Drop</label>
+</label>
+
+<label class="checkbox-container">
+<input type = "radio" onchange="setObstacle(globalX, globalY, false)" id = "toggleSlider"  name="shape" onclick = "scene.aeroFoil = true, scene.square = false, scene.rainDrop = false, scene.circle = false">
+<label for= "toggleSlider">Aerofoil</label>
+</label>
+
+<button class="button" onclick="controlBox()">Controls</button>
+
+
+<label class="checkbox-container">
+<label for="speedRange">Velocity: <span id="velOutout"></span></label>
+<input type="range" min="5" max="100" value="20" class="slider" id="speedRange">
+</label>
+
+<label class="checkbox-container">
+<label for="resolution">Resolution</label>   
+<input type="text" onchange="checkRes(value)" id = "resolution" value = "100">
+</label>
+
+
+<label class="checkbox-container">
+<input type="range" onchange="setObstacle(globalX, globalY, false)" min="-20" max="20" value="0" class="slider" id="angle">
+<label for="angle">Angle: <span id="sliderAngle"></span></label>
+</label>
+
+<label class="checkbox-container">
+<label for="K">Aerofoil Curve: <span id="k"></span></label>
+<input type="range" onchange="setObstacle(globalX, globalY, false)" min="0" max="100" value="50" class="slider" id="K">
+</label>
+
+
+
 <canvas id="myCanvas" style="border:2px solid"></canvas>
 
 <script src="index.js"></script>
 
 </body>
-</html>
+</circleButton>

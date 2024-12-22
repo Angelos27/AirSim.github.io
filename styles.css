@@ -1,14 +1,14 @@
 body {
     font-family: verdana; 
-    font-size: 15px;
+    font-size: 1vw;
     background-color: #202020;
 }			
 .button {
     background-color: #606060;
-    border: none;
+    
     color: white;
-    padding: 10px 10px;
-    font-size: 16px;
+    padding: 1vh 1vw;
+    font-size: 1.5vw;
     margin: 4px 2px;
     cursor: pointer;
     font-weight: bold;
@@ -18,16 +18,39 @@ label{
     font-weight: bold;
 }
 input[type = "range"]{
-    width: 200px;
+    width: 5vw;
+    outline: 2px solid rgb(255, 255, 255);
+    outline-offset: 5px
 }
+
+
 .slider {
     -webkit-appearance: none;
     width: 80px;
     height: 6px;
     border-radius: 5px;
     background: #d3d3d3;
-    outline: none;
+    outline: white;
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
+}
+
+.checkbox-container {
+    display: inline-block;
+    padding: 0.5vw;
+    border: 0.3vw solid #606060;
+    border-radius: 0.1vw; 
+}
+input[type = "text"]{
+    width: 2.5vw;
+}
+input[type=checkbox]{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(1vw); /* IE */
+  -moz-transform: scale(1vw); /* FF */
+  -webkit-transform: scale(1vw); /* Safari and Chrome */
+  -o-transform: scale(1vw); /* Opera */
+  transform: scale(1vw);
+  padding: 10px;
 }
